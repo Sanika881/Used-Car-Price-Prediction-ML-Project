@@ -1,88 +1,183 @@
-<h2>Used Car Price Prediction</h2>
-📌 Overview This project is all about diving into the world of used car prices and predicting them using machine learning techniques. I’ve got a dataset that includes important details like the car's brand, model, mileage, engine capacity, and selling price. The aim is to uncover trends in the used car market, tidy up the data, and create some predictive models.
+# 🚗 Used Car Price Prediction
 
-<br>📂 Dataset The dataset features some key elements:
+A machine learning project that explores the used car market and predicts a car's **selling price** from details such as brand, age, kilometres driven, fuel type, engine capacity and power. It covers the full workflow: data cleaning, exploratory analysis, feature engineering, and training and comparing four regression models.
 
-car_name – The name of the car
+---
 
-brand – The manufacturer behind the car
+## 📌 Table of Contents
 
-model – The specific model of the car
+- [Overview](#-overview)
+- [Dataset](#-dataset)
+- [Project Workflow](#-project-workflow)
+- [Data Preprocessing](#-data-preprocessing)
+- [Exploratory Data Analysis](#-exploratory-data-analysis)
+- [Models](#-models)
+- [Model Evaluation](#-model-evaluation)
+- [Insights & Findings](#-insights--findings)
+- [Tech Stack](#️-tech-stack)
+- [Getting Started](#-getting-started)
+- [Repository Structure](#-repository-structure)
+- [Limitations & Future Work](#-limitations--future-work)
+- [Author](#-author)
 
-vehicle_age – How old the car is (in years)
+---
 
-km_driven – The total distance the car has traveled
+## 📖 Overview
 
-seller_type – The type of seller (Dealer or Individual)
+Buying or selling a used car is hard because prices depend on many factors at once. This project:
 
-fuel_type – The kind of fuel the car uses (Petrol, Diesel, or CNG)
+1. Cleans and prepares a used car listings dataset.
+2. Explores the trends that drive price (age, mileage, brand, seller type, fuel type).
+3. Trains and compares **Linear Regression, Decision Tree, Random Forest and a TensorFlow neural network** to predict `selling_price`.
 
-transmission_type – The type of transmission (Manual or Automatic)
+---
 
-mileage – The car's mileage (in km/l)
+## 📂 Dataset
 
-engine – The engine capacity (in cc)
+| Column | Description |
+|---|---|
+| `car_name` | Full name of the car |
+| `brand` | Manufacturer |
+| `model` | Specific model |
+| `vehicle_age` | Age of the car (years) |
+| `km_driven` | Total distance driven (km) |
+| `seller_type` | Dealer or Individual |
+| `fuel_type` | Petrol, Diesel or CNG |
+| `transmission_type` | Manual or Automatic |
+| `mileage` | Fuel efficiency (km/l) |
+| `engine` | Engine capacity (cc) |
+| `max_power` | Maximum power output |
+| `selling_price` | **Target variable**: price at which the car was sold |
 
-max_power – The maximum power output of the car
+---
 
-selling_price – The price at which the car is sold (this is our target variable)
+## 🔄 Project Workflow
 
+```
+Raw data → Cleaning → EDA → Encoding & scaling → Train/test split → Model training → Evaluation → Insights
+```
 
-<br>🔍 Data Preprocessing Checking for Duplicates – We identified and removed any duplicate entries.
+---
 
-Handling Missing Values – We filled in missing mileage values using the mean.
+## 🧹 Data Preprocessing
 
-Detecting Outliers – We used boxplots to take a closer look at price distribution.
+| Step | What was done |
+|---|---|
+| **Duplicates** | Identified and removed duplicate rows |
+| **Missing values** | Filled missing `mileage` values with the column mean |
+| **Outliers** | Inspected the price distribution with boxplots |
+| **Encoding** | Converted categorical features (brand, seller type, fuel type, transmission) to numeric form |
+| **Scaling** | Standardised numerical features with `StandardScaler()` |
 
-Scaling & Normalization – We applied standardization with StandardScaler().
+> **Tip:** fit the scaler (and any imputer) on the **training set only**, then apply it to the test set, to avoid data leakage. Scaling matters for Linear Regression and the neural network; tree-based models don't need it.
 
-Encoding Categorical Variables – We converted categorical features into numerical formats.
+---
 
+## 📊 Exploratory Data Analysis
 
-<br>📊 Exploratory Data Analysis (EDA) Histogram: Shows the distribution of car prices.
+- **Histogram:** distribution of selling prices.
+- **Boxplot:** spread and outliers in price.
+- **Scatter plot:** mileage vs. selling price.
+- **Bar chart:** average selling price by brand.
+- **Heatmap:** correlation between numerical features.
 
-Scatter Plot: Illustrates the relationship between mileage and selling price.
+---
 
-Bar Chart: Compares average prices by brand.
+## 🤖 Models
 
-Heatmap: Displays the correlation between numerical features.
+| Model | Why it was used |
+|---|---|
+| **Linear Regression** | Simple, interpretable baseline for numerical relationships |
+| **Decision Tree Regressor** | Captures non-linear relationships and feature interactions |
+| **Random Forest Regressor** | Ensemble of trees; usually more accurate and less prone to overfitting |
+| **Neural Network (TensorFlow/Keras)** | Learns complex patterns through multiple dense layers |
 
+---
 
-<br>🤖 Machine Learning Models Linear Regression – Used for predicting car prices based on numerical features.
+## 🏆 Model Evaluation
 
-Decision Tree Regressor – Helps capture non-linear relationships.
+Regression models are evaluated with:
 
-Random Forest Regressor – Enhances prediction accuracy through ensemble learning.
+- **R² Score:** how much of the variance in price the model explains.
+- **MAE** (Mean Absolute Error): average error in price units.
+- **RMSE** (Root Mean Squared Error): error that penalises large misses more heavily.
 
-Neural Network Model – Developed with TensorFlow for deep learning-based price predictions.
+> Classification "accuracy" doesn't apply to a continuous target like price, so R², MAE and RMSE are used instead.
 
+**Results** *(fill in from your notebook)*
 
-<br>🏆 Model Evaluation R² Score – This measures how well our regression models fit the data.
+| Model | R² (Train) | R² (Test) | MAE | RMSE |
+|---|---|---|---|---|
+| Linear Regression | – | – | – | – |
+| Decision Tree | – | – | – | – |
+| Random Forest | – | – | – | – |
+| Neural Network | – | – | – | – |
 
-Accuracy Score – Evaluates the performance of our
+---
 
+## 💡 Insights & Findings
 
-<br>💡 Insights & Findings
-The age of a vehicle and its mileage play a big role in determining its price.
+- **Vehicle age and kilometres driven** have a strong effect on price: older, higher-mileage cars sell for less.
+- **Dealer-listed cars** tend to be priced higher than those sold by individuals.
+- **Luxury brands** such as BMW and Mercedes command noticeably higher prices.
+- **Diesel cars** often hold their resale value better than petrol cars.
 
-Cars listed by dealers tend to be priced higher than those sold by individual sellers.
+---
 
-Luxury brands, such as BMW and Mercedes, usually command higher selling prices.
+## 🛠️ Tech Stack
 
-When it comes to resale value, diesel cars often outperform petrol cars.
+- **Python**
+- **Pandas & NumPy:** data manipulation
+- **Matplotlib & Seaborn:** visualisation
+- **Scikit-learn:** preprocessing and ML models
+- **TensorFlow / Keras:** neural network
 
+---
 
-<br>🛠️ Technologies Used
+## 🚀 Getting Started
 
-Python
+```bash
+# 1. Clone the repository
+git clone https://github.com/Sanika881/used-car-price-prediction.git
+cd used-car-price-prediction
 
-Pandas & NumPy for data manipulation
+# 2. Install dependencies
+pip install pandas numpy matplotlib seaborn scikit-learn tensorflow jupyter
 
-Matplotlib & Seaborn for data visualization
+# 3. Launch the notebook
+jupyter notebook Used_Car_Price_Prediction.ipynb
+```
 
-Scikit-learn for machine learning models
+---
 
-TensorFlow/Keras for deep learning models
+## 📁 Repository Structure
 
+```
+used-car-price-prediction/
+├── data/
+│   └── used_cars.csv
+├── notebooks/
+│   └── Used_Car_Price_Prediction.ipynb
+├── images/                  # EDA and results charts
+├── requirements.txt
+└── README.md
+```
 
- 
+> Adjust repository name, file names and paths to match your project.
+
+---
+
+## 🔮 Limitations & Future Work
+
+- Compare models with **cross-validation** and tune hyperparameters (`GridSearchCV` / `RandomizedSearchCV`).
+- Try **log-transforming** `selling_price` to handle its skew.
+- Add **feature importance** (Random Forest) or SHAP plots to explain predictions.
+- Try gradient boosting models such as **XGBoost** or **LightGBM**.
+- Deploy the best model as a small **Streamlit** or **Flask** app.
+
+---
+
+## 👩‍💻 Author
+
+**Sanika**
+GitHub: [@Sanika881](https://github.com/Sanika881)
