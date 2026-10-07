@@ -1,75 +1,68 @@
 # 🚗 Used Car Price Prediction
 
-A machine learning project that explores the used car market and predicts a car's **selling price** from details such as brand, age, kilometres driven, fuel type, engine capacity and power. It covers the full workflow: data cleaning, exploratory analysis, feature engineering, and training and comparing four regression models.
+A machine learning project that predicts a used car's **selling price** from its brand, age, kilometres driven, fuel type, engine capacity and power. It covers data checks, exploratory analysis, preprocessing, and a comparison of four regression models plus one classification baseline.
+
+**Best result so far:** a feedforward neural network reaches **R² = 0.944** on the held-out test set, with Random Forest close behind at **0.932**.
 
 ---
 
 ## 📌 Table of Contents
 
-- [Overview](#-overview)
 - [Dataset](#-dataset)
-- [Project Workflow](#-project-workflow)
-- [Data Preprocessing](#-data-preprocessing)
+- [Workflow](#-workflow)
+- [Preprocessing](#-preprocessing)
 - [Exploratory Data Analysis](#-exploratory-data-analysis)
 - [Models](#-models)
-- [Model Evaluation](#-model-evaluation)
-- [Insights & Findings](#-insights--findings)
+- [Results](#-results)
+- [Known Issues](#️-known-issues)
 - [Tech Stack](#️-tech-stack)
 - [Getting Started](#-getting-started)
 - [Repository Structure](#-repository-structure)
-- [Limitations & Future Work](#-limitations--future-work)
+- [Future Work](#-future-work)
 - [Author](#-author)
-
----
-
-## 📖 Overview
-
-Buying or selling a used car is hard because prices depend on many factors at once. This project:
-
-1. Cleans and prepares a used car listings dataset.
-2. Explores the trends that drive price (age, mileage, brand, seller type, fuel type).
-3. Trains and compares **Linear Regression, Decision Tree, Random Forest and a TensorFlow neural network** to predict `selling_price`.
 
 ---
 
 ## 📂 Dataset
 
-| Column | Description |
-|---|---|
-| `car_name` | Full name of the car |
-| `brand` | Manufacturer |
-| `model` | Specific model |
-| `vehicle_age` | Age of the car (years) |
-| `km_driven` | Total distance driven (km) |
-| `seller_type` | Dealer or Individual |
-| `fuel_type` | Petrol, Diesel or CNG |
-| `transmission_type` | Manual or Automatic |
-| `mileage` | Fuel efficiency (km/l) |
-| `engine` | Engine capacity (cc) |
-| `max_power` | Maximum power output |
-| `selling_price` | **Target variable**: price at which the car was sold |
+**15,411 used car listings**, 14 columns. The target is `selling_price`.
+
+| Column              | Description                                    |
+| ------------------- | ---------------------------------------------- |
+| `car_name`          | Full name of the car                           |
+| `brand`             | Manufacturer                                   |
+| `model`             | Specific model                                 |
+| `vehicle_age`       | Age of the car (years)                         |
+| `km_driven`         | Total distance driven (km)                     |
+| `seller_type`       | Dealer or Individual                           |
+| `fuel_type`         | Petrol, Diesel or CNG                          |
+| `transmission_type` | Manual or Automatic                            |
+| `mileage`           | Fuel efficiency (km/l)                         |
+| `engine`            | Engine capacity (cc)                           |
+| `max_power`         | Maximum power output                           |
+| `seats`             | Number of seats                                |
+| `selling_price`     | **Target:** price at which the car was sold    |
 
 ---
 
-## 🔄 Project Workflow
+## 🔄 Workflow
 
 ```
-Raw data → Cleaning → EDA → Encoding & scaling → Train/test split → Model training → Evaluation → Insights
+Load data → Duplicate & missing-value checks → EDA → Scaling → Encoding → 80/20 split → Train models → Compare R²
 ```
 
 ---
 
-## 🧹 Data Preprocessing
+## 🧹 Preprocessing
 
-| Step | What was done |
-|---|---|
-| **Duplicates** | Identified and removed duplicate rows |
-| **Missing values** | Filled missing `mileage` values with the column mean |
-| **Outliers** | Inspected the price distribution with boxplots |
-| **Encoding** | Converted categorical features (brand, seller type, fuel type, transmission) to numeric form |
-| **Scaling** | Standardised numerical features with `StandardScaler()` |
-
-> **Tip:** fit the scaler (and any imputer) on the **training set only**, then apply it to the test set, to avoid data leakage. Scaling matters for Linear Regression and the neural network; tree-based models don't need it.
+| Step               | What was done                                                                 |
+| ------------------ | ----------------------------------------------------------------------------- |
+| **Duplicates**     | Checked: none found                                                           |
+| **Missing values** | Checked: none found                                                           |
+| **Outliers**       | Inspected the price distribution with a boxplot                               |
+| **Scaling**        | `StandardScaler` on numeric columns                                           |
+| **Encoding**       | One-hot encoding with `pd.get_dummies(drop_first=True)`                       |
+| **Split**          | 80% train / 20% test, `random_state=42`                                       |
 
 ---
 
@@ -77,50 +70,53 @@ Raw data → Cleaning → EDA → Encoding & scaling → Train/test split → Mo
 
 - **Histogram:** distribution of selling prices.
 - **Boxplot:** spread and outliers in price.
-- **Scatter plot:** mileage vs. selling price.
+- **Scatter plot:** price against a numeric feature, coloured by fuel type.
 - **Bar chart:** average selling price by brand.
-- **Heatmap:** correlation between numerical features.
+- **Heatmap:** correlation between numeric features.
 
 ---
 
 ## 🤖 Models
 
-| Model | Why it was used |
-|---|---|
-| **Linear Regression** | Simple, interpretable baseline for numerical relationships |
-| **Decision Tree Regressor** | Captures non-linear relationships and feature interactions |
-| **Random Forest Regressor** | Ensemble of trees; usually more accurate and less prone to overfitting |
-| **Neural Network (TensorFlow/Keras)** | Learns complex patterns through multiple dense layers |
+| Model                              | Setup                                                                    |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| **Linear Regression**              | Baseline                                                                 |
+| **Decision Tree Regressor**        | Default parameters                                                       |
+| **Random Forest Regressor**        | Default parameters                                                       |
+| **Feedforward Neural Network**     | Dense 64 → 32 → 1 (ReLU), Adam (lr 0.01), 50 epochs, batch size 32, 20% validation split |
+| **Logistic Regression** (classification) | Predicts whether a car's price is above the median                 |
 
 ---
 
-## 🏆 Model Evaluation
+## 🏆 Results
 
-Regression models are evaluated with:
+Regression models are scored with **R²** on the test set.
 
-- **R² Score:** how much of the variance in price the model explains.
-- **MAE** (Mean Absolute Error): average error in price units.
-- **RMSE** (Root Mean Squared Error): error that penalises large misses more heavily.
+| Model                                   | Test score                                 |
+| --------------------------------------- | ------------------------------------------ |
+| Feedforward Neural Network              | **R² = 0.944**                             |
+| Random Forest                           | R² = 0.932                                 |
+| Decision Tree                           | R² = 0.871                                 |
+| Linear Regression                       | R² ≈ −1.6 × 10¹⁷ (failed, see Known Issues) |
+| Logistic Regression (above/below median) | Accuracy = 0.918 (a classification task, not comparable to R²) |
 
-> Classification "accuracy" doesn't apply to a continuous target like price, so R², MAE and RMSE are used instead.
+**Takeaways**
 
-**Results** *(fill in from your notebook)*
-
-| Model | R² (Train) | R² (Test) | MAE | RMSE |
-|---|---|---|---|---|
-| Linear Regression | – | – | – | – |
-| Decision Tree | – | – | – | – |
-| Random Forest | – | – | – | – |
-| Neural Network | – | – | – | – |
+- Tree-based models and the neural network all clear R² = 0.87, so the features carry strong signal for price.
+- The neural network and Random Forest are within 0.012 R² of each other. With a single run and no cross-validation, this is too small a gap to call a winner.
+- Random Forest is the more stable choice: the network's validation loss was noisy across epochs.
 
 ---
 
-## 💡 Insights & Findings
+## ⚠️ Known Issues
 
-- **Vehicle age and kilometres driven** have a strong effect on price: older, higher-mileage cars sell for less.
-- **Dealer-listed cars** tend to be priced higher than those sold by individuals.
-- **Luxury brands** such as BMW and Mercedes command noticeably higher prices.
-- **Diesel cars** often hold their resale value better than petrol cars.
+These are being fixed in the notebook, and the results above will be updated afterwards:
+
+- **Linear Regression fails** (R² of about −10¹⁷). The likely cause is collinear one-hot features, since `car_name` duplicates `brand` + `model`.
+- **The `mileage` column is overwritten** by `max_power` values in the missing-value step, so the "mileage" used in the charts and models is actually max power.
+- **Scaling is applied before the train/test split** and to every numeric column, including the target and the leftover index column `Unnamed: 0`. This leaks test-set statistics into training, and error metrics would not be in rupees.
+- **One extreme `km_driven` value (3,800,000 km)** is not handled.
+- Only R² is reported; MAE and RMSE are not yet calculated.
 
 ---
 
@@ -129,7 +125,7 @@ Regression models are evaluated with:
 - **Python**
 - **Pandas & NumPy:** data manipulation
 - **Matplotlib & Seaborn:** visualisation
-- **Scikit-learn:** preprocessing and ML models
+- **Scikit-learn:** preprocessing and models
 - **TensorFlow / Keras:** neural network
 
 ---
@@ -138,14 +134,17 @@ Regression models are evaluated with:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Sanika881/used-car-price-prediction.git
-cd used-car-price-prediction
+git clone https://github.com/Sanika881/Data-Science-and-Machine-Learning.git
+cd Data-Science-and-Machine-Learning
 
 # 2. Install dependencies
 pip install pandas numpy matplotlib seaborn scikit-learn tensorflow jupyter
 
-# 3. Launch the notebook
-jupyter notebook Used_Car_Price_Prediction.ipynb
+# 3. Add the dataset (not stored in this repo) and update the file path in the
+#    first cells. The notebook currently reads from a Google Colab path (/content/...).
+
+# 4. Launch the notebook
+jupyter notebook used_car_dataset.ipynb
 ```
 
 ---
@@ -153,31 +152,25 @@ jupyter notebook Used_Car_Price_Prediction.ipynb
 ## 📁 Repository Structure
 
 ```
-used-car-price-prediction/
-├── data/
-│   └── used_cars.csv
-├── notebooks/
-│   └── Used_Car_Price_Prediction.ipynb
-├── images/                  # EDA and results charts
-├── requirements.txt
+Data-Science-and-Machine-Learning/
+├── used_car_dataset.ipynb    # Checks, EDA, preprocessing, models, comparison
 └── README.md
 ```
 
-> Adjust repository name, file names and paths to match your project.
-
 ---
 
-## 🔮 Limitations & Future Work
+## 🔮 Future Work
 
-- Compare models with **cross-validation** and tune hyperparameters (`GridSearchCV` / `RandomizedSearchCV`).
-- Try **log-transforming** `selling_price` to handle its skew.
-- Add **feature importance** (Random Forest) or SHAP plots to explain predictions.
-- Try gradient boosting models such as **XGBoost** or **LightGBM**.
-- Deploy the best model as a small **Streamlit** or **Flask** app.
+- Fit the scaler on the training set only; leave the target unscaled.
+- Report **MAE** and **RMSE** in rupees alongside R².
+- Use **cross-validation** and hyperparameter tuning (`GridSearchCV`).
+- Try a **log-transform** of the price, and gradient boosting (XGBoost / LightGBM).
+- Add **feature importance** or SHAP plots.
+- Deploy the best model as a small **Streamlit** app.
 
 ---
 
 ## 👩‍💻 Author
 
-**Sanika**
-GitHub: [@Sanika881](https://github.com/Sanika881)
+**Sanika Kadam**
+[GitHub: @Sanika881](https://github.com/Sanika881) · [LinkedIn](https://www.linkedin.com/in/sanika-kadam007/)
